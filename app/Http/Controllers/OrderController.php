@@ -20,7 +20,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('products')->get();
+        $orders = Order::with('product')->get();
         return view('orders.index', compact('orders'));
     }
 
@@ -43,7 +43,14 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        Order::create($request->validated());
+        $data = $request->validated();
+
+        //добавляем total_price (в будущем логику можно вынести в сервис)
+        $product = Product::findOrFail($data['product_id']);
+        $data['total_price'] = $product->price * $data['quantity'];
+
+        Order::create($data);
+
         return redirect()->route('orders.index')->with('success', 'Заказ создан');
     }
 
@@ -58,5 +65,13 @@ class OrderController extends Controller
         return view('orders.show', compact('order'));
     }
 
-    //TODO написать метод для смены статуса
+    public function complete(Order $order)
+    {
+        if ($order->status !== 'completed') {
+            $order->status = 'completed';
+            $order->save();
+        }
+
+        return redirect()->route('orders.show', $order)->with('success', 'Заказ выполнен');
+    }
 }

@@ -18,4 +18,4 @@ use Illuminate\Support\Facades\Route;
 Route::resource('products', ProductController::class);
 Route::resource('orders', OrderController::class);
 
-//TODO написать роут для смены статуса
+Route::patch('/orders/{order}/complete', [OrderController::class, 'complete'])->name('orders.complete');

@@ -2,9 +2,11 @@
 
 namespace App\Http\Services;
 
+use App\Mail\OrderCreate;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrderService
 {
@@ -14,7 +16,11 @@ class OrderService
 
             $data['total_price'] = $product->price * $data['quantity'];
 
-            return Order::create($data);
+            $order = Order::create($data);
+
+            Mail::to('aksayskaya2804@gmail.com')->queue(new OrderCreate($order));
+
+            return $order;
         });
     }
 }

@@ -27,4 +27,8 @@ RUN apt-get install -y --no-install-recommends \
         --with-jpeg=/usr/include/ \
  && docker-php-ext-install gd
 
+RUN docker-php-ext-install pcntl
+
+RUN pecl install redis && docker-php-ext-enable redis
+
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

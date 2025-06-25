@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOrderRequest;
+use App\Http\Services\OrderService;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Contracts\Foundation\Application;
@@ -13,6 +14,8 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    public function __construct(protected OrderService $orderService){}
+
     /**
      * Display a listing of the resource.
      *
@@ -43,14 +46,7 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        $data = $request->validated();
-
-        //добавляем total_price (в будущем логику можно вынести в сервис)
-        $product = Product::findOrFail($data['product_id']);
-        $data['total_price'] = $product->price * $data['quantity'];
-
-        Order::create($data);
-
+        $this->orderService->create($request->validated());
         return redirect()->route('orders.index')->with('success', 'Заказ создан');
     }
 

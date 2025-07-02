@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Events\OrderCreated;
 use App\Mail\OrderCreate;
 use App\Models\Order;
 use App\Models\Product;
@@ -24,7 +25,7 @@ class OrderService
 
             $order = $this->orders->create($data);
 
-            Mail::to('aksayskaya2804@gmail.com')->queue(new OrderCreate($order));
+            event(new OrderCreated($order));
 
             return $order;
         });
